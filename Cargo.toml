@@ -2,6 +2,12 @@
 name = "devloop"
 version = "0.1.0"
 authors = ["Amit Gold <amit.gold00@gmail.com>"]
+description = "A tool to help with repetitive commands during development."
+repository = "https://www.github.com/SuperCuber/devloop"
+readme = "README.md"
+keywords = ["devloop", "development", "repetitive"]
+categories = ["command-line-utilities"]
+license = "WTFPL"
 
 [dependencies]
 clap = "2.*"
