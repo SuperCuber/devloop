@@ -1,6 +1,10 @@
+extern crate env_logger;
+extern crate yaml_rust;
+
 #[macro_use]
 extern crate clap;
-extern crate yaml_rust;
+#[macro_use]
+extern crate log;
 
 mod app;
 mod configuration;
@@ -9,14 +13,11 @@ mod message;
 mod run;
 
 fn main() {
+    env_logger::init().expect("initialize logger");
     let args = app::parse_args();
     let configuration = configuration::load(args.value_of("file").expect("file argument"))
         .unwrap_or_else(|error| {
-            message::msg(
-                &message::MessageType::Fail,
-                &format!("Failed to load configuration: {}", error),
-                false,
-            );
+            error!("Failed to load configuration: {}", error);
             std::process::exit(1)
         });
     configuration.run();

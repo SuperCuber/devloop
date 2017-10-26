@@ -6,3 +6,5 @@ authors = ["Amit Gold <amit.gold00@gmail.com>"]
 [dependencies]
 clap = "2.*"
 yaml-rust = "0.3.*"
+log = "0.3.*"
+env_logger = "0.4.*"

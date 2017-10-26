@@ -7,6 +7,7 @@ impl DevloopConfig {
     pub fn run(&self) {
         let help = self.calculate_help();
         loop {
+            clear_screen();
             if self.run_tasks() {
                 msg(&MessageType::Success, &format!("Done [{}]:", help), true);
             } else {
@@ -17,7 +18,7 @@ impl DevloopConfig {
                 "q" => break,
                 action => {
                     if let Some(task) = self.actions.get(action) {
-                        if task.execute() {
+                        if !task.execute() {
                             msg(&MessageType::Fail, "Error.", false);
                             read_line();
                         }
@@ -48,6 +49,12 @@ impl DevloopConfig {
         }
         true
     }
+}
+
+fn clear_screen() {
+    Command::new("sh").args(&["-c", "clear"]).status().expect(
+        "clear screen",
+    );
 }
 
 fn read_line() -> String {

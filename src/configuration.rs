@@ -3,7 +3,6 @@ use std::fs::File;
 use std::io::Read;
 
 use error::DevloopError;
-use message::{msg, MessageType};
 
 use yaml_rust::{Yaml, YamlLoader};
 
@@ -25,7 +24,7 @@ pub fn load<S: Into<String>>(filename: S) -> Result<DevloopConfig, DevloopError>
 
     let document = &YamlLoader::load_from_str(&contents)?[0];
 
-    println!("document: {:?}", document);
+    debug!("document: {:?}", document);
 
     let tasks = document["tasks"]
         .as_vec()
@@ -34,7 +33,7 @@ pub fn load<S: Into<String>>(filename: S) -> Result<DevloopConfig, DevloopError>
         .filter_map(|task| Task::parse(task))
         .collect();
 
-    println!("tasks: {:?}", tasks);
+    debug!("tasks: {:?}", tasks);
 
     let actions = document["actions"]
         .as_hash()
@@ -45,7 +44,7 @@ pub fn load<S: Into<String>>(filename: S) -> Result<DevloopConfig, DevloopError>
         })
         .collect();
 
-    println!("actions: {:?}", actions);
+    debug!("actions: {:?}", actions);
 
     let reminders = document["reminders"].as_str().unwrap_or("").to_owned();
 
@@ -60,11 +59,8 @@ impl Task {
     fn parse(task: &Yaml) -> Option<Self> {
         let parsed = Task::parse_no_warning(task);
         if parsed.is_none() {
-            msg(
-                &MessageType::Fail,
-                &format!("Warning: failed to parse {:?} as a task", task),
-                false,
-            );
+            error!("Failed to parse {:?} as a task, ignoring.", task);
+            ::std::io::stdin().read_line(&mut String::new()).unwrap();
         }
         parsed
     }
