@@ -1,3 +1,4 @@
+extern crate colored;
 extern crate env_logger;
 extern crate yaml_rust;
 
