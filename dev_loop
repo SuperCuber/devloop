@@ -1,1 +1,14 @@
-../dev_loop
+tasks:
+    - ["Clippy", "cargo clippy -q"]
+
+reminders: "Don't forget to format!"
+
+actions:
+    f: ["Format", "cargo fmt"]
+    t: ["Test", "cargo test -q -- -q"]
+    b: ["Benchmark", "cargo bench -q -- -q; read"]
+    r: ["Build release", "cargo build --release"]
+    u: ["Run", "te 'cargo run'"]
+    c: ["Clean", "cargo clean"]
+
+# vim:ft=yaml:
