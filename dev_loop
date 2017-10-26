@@ -1,9 +1,9 @@
-tasks:
+tasks: # Will be re-ran every time you press Enter
     - ["Clippy", "cargo clippy -q"]
 
-reminders: "Don't forget to format!"
+reminders: "Don't forget to format!" # Printed at the end
 
-actions:
+actions: # Q to Quit
     f: ["Format", "cargo fmt"]
     t: ["Test", "cargo test -q -- -q"]
     b: ["Benchmark", "cargo bench -q -- -q; read"]
