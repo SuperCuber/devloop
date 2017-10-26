@@ -1,0 +1,8 @@
+[package]
+name = "devloop"
+version = "0.1.0"
+authors = ["Amit Gold <amit.gold00@gmail.com>"]
+
+[dependencies]
+clap = "2.*"
+yaml-rust = "0.3.*"
