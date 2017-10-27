@@ -32,12 +32,16 @@ impl DevloopConfig {
     }
 
     fn calculate_help(&self) -> String {
-        let keys: Vec<&String> = self.actions.keys().collect();
+        let keys: Vec<&str> = self.actions
+            .keys()
+            .map(|i| i.as_ref())
+            .chain(Some("q"))
+            .collect();
 
         if keys.iter().any(|key| key.len() > 1) {
-            keys.iter().fold(String::new(), |a, i| a + "|" + i)
+            keys.join("|")
         } else {
-            keys.iter().fold(String::new(), |a, i| a + i)
+            keys.concat()
         }
     }
 
