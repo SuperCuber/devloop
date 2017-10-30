@@ -68,8 +68,8 @@ impl Task {
     fn parse_no_warning(task: &Yaml) -> Option<Self> {
         let task = task.as_vec()?;
         Some(Task {
-            name: task[0].as_str()?.to_owned(),
-            command: task[1].as_str()?.to_owned(),
+            name: task.get(0)?.as_str()?.to_owned(),
+            command: task.get(1)?.as_str()?.to_owned(),
         })
     }
 }
