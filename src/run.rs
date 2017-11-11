@@ -7,7 +7,7 @@ impl DevloopConfig {
     pub fn run(&self) {
         let help = self.calculate_help();
         loop {
-            clear_screen();
+            Command::new("clear").status().expect("clear screen");
             if self.run_tasks() {
                 msg(&MessageType::Success, &format!("Done [{}]:", help), true);
             } else {
@@ -53,12 +53,6 @@ impl DevloopConfig {
         }
         true
     }
-}
-
-fn clear_screen() {
-    Command::new("sh").args(&["-c", "clear"]).status().expect(
-        "clear screen",
-    );
 }
 
 fn read_line() -> String {
