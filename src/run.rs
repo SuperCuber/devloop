@@ -6,24 +6,27 @@ use message::{msg, MessageType};
 impl DevloopConfig {
     pub fn run(&self) {
         let help = self.calculate_help();
-        loop {
+        'main: loop {
             Command::new("clear").status().expect("clear screen");
             if self.run_tasks() {
                 msg(&MessageType::Success, &format!("Done [{}]:", help), true);
             } else {
                 msg(&MessageType::Fail, "Error.", false);
             }
-            match read_line().as_ref() {
-                "" => continue,
-                "q" => break,
-                action => {
-                    if let Some(task) = self.actions.get(action) {
-                        if !task.execute() {
-                            msg(&MessageType::Fail, "Error.", false);
-                            read_line();
+            loop {
+                match read_line().as_ref() {
+                    "q" => break 'main,
+                    action => {
+                        if let Some(task) = self.actions.get(action) {
+                            if task.execute() {
+                                break;
+                            } else {
+                                msg(&MessageType::Fail, "Error.", false);
+                                // Read line again
+                            }
+                        } else {
+                            break;
                         }
-                    } else {
-                        continue;
                     }
                 }
             }
