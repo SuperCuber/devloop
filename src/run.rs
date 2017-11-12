@@ -17,15 +17,15 @@ impl DevloopConfig {
                 match read_line().as_ref() {
                     "q" => break 'main,
                     action => {
-                        if let Some(task) = self.actions.get(action) {
-                            if task.execute() {
-                                break;
-                            } else {
-                                msg(&MessageType::Fail, "Error.", false);
-                                // Read line again
-                            }
-                        } else {
+                        if self.actions
+                            .get(action)
+                            .map(|task| task.execute())
+                            .unwrap_or(true)
+                        {
                             break;
+                        } else {
+                            msg(&MessageType::Fail, "Error.", false);
+                            // Read line again
                         }
                     }
                 }
