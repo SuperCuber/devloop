@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
@@ -18,9 +19,9 @@ pub struct Task {
     pub command: String,
 }
 
-pub fn load<S: Into<String>>(filename: S) -> Result<DevloopConfig, DevloopError> {
+pub fn load<P: AsRef<Path>>(filename: P) -> Result<DevloopConfig, DevloopError> {
     let mut contents = String::new();
-    File::open(filename.into())?.read_to_string(&mut contents)?;
+    File::open(filename)?.read_to_string(&mut contents)?;
 
     let document = &YamlLoader::load_from_str(&contents)?[0];
 
