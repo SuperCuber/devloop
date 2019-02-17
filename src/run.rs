@@ -63,7 +63,7 @@ fn read_line() -> String {
     use std::io::BufRead;
     let stdin = ::std::io::stdin();
     let line = stdin.lock().lines().next().unwrap().unwrap();
-    line.clone()
+    line
 }
 
 impl Task {

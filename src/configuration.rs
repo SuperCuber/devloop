@@ -29,7 +29,7 @@ pub fn load<S: Into<String>>(filename: S) -> Result<DevloopConfig, DevloopError>
     let tasks = document["tasks"]
         .as_vec()
         .ok_or(DevloopError::InvalidConfig)?
-        .into_iter()
+        .iter()
         .filter_map(|task| Task::parse(task))
         .collect();
 
@@ -38,7 +38,7 @@ pub fn load<S: Into<String>>(filename: S) -> Result<DevloopConfig, DevloopError>
     let actions = document["actions"]
         .as_hash()
         .ok_or(DevloopError::InvalidConfig)?
-        .into_iter()
+        .iter()
         .filter_map(|(key, value)| Some((key.as_str()?.to_owned(), Task::parse(value)?)))
         .collect();
 
@@ -47,9 +47,9 @@ pub fn load<S: Into<String>>(filename: S) -> Result<DevloopConfig, DevloopError>
     let reminders = document["reminders"].as_str().unwrap_or("").to_owned();
 
     Ok(DevloopConfig {
-        tasks: tasks,
-        actions: actions,
-        reminders: reminders,
+        tasks,
+        actions,
+        reminders,
     })
 }
 
