@@ -1,4 +1,5 @@
 use std::process::Command;
+use crossterm_terminal::{terminal, ClearType};
 
 use configuration::{DevloopConfig, Task};
 use message::{msg, MessageType};
@@ -7,7 +8,7 @@ impl DevloopConfig {
     pub fn run(&self) {
         let help = self.calculate_help();
         'main: loop {
-            Command::new("clear").status().expect("clear screen");
+            terminal().clear(ClearType::All).expect("clear terminal");
             if self.run_tasks() {
                 msg(&MessageType::Success, &format!("Done [{}]:", help), true);
             } else {
@@ -73,11 +74,20 @@ impl Task {
             false,
         );
 
-        Command::new("sh")
-            .arg("-c")
-            .arg(&self.command)
-            .status()
-            .expect("child exit status")
-            .success()
+        if cfg!(target_os = "windows") {
+            Command::new("cmd")
+                .arg("/C")
+                .arg(&self.command)
+                .status()
+                .expect("child exit status")
+                .success()
+        } else {
+            Command::new("sh")
+                .arg("-c")
+                .arg(&self.command)
+                .status()
+                .expect("child exit status")
+                .success()
+        }
     }
 }

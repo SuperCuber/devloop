@@ -1,4 +1,5 @@
 extern crate colored;
+extern crate crossterm_terminal;
 extern crate env_logger;
 extern crate yaml_rust;
 
