@@ -1,4 +1,4 @@
-use std::fmt::{Display, Formatter, Error as FmtError};
+use std::fmt::{Display, Error as FmtError, Formatter};
 use std::io::Error as IoError;
 
 use yaml_rust::ScanError;

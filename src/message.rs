@@ -1,6 +1,6 @@
-use colored::{Colorize, ColoredString};
+use colored::{ColoredString, Colorize};
 
-use std::io::{Write, stdout};
+use std::io::{stdout, Write};
 
 pub enum MessageType {
     Success,

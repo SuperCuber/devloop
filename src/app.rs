@@ -1,4 +1,4 @@
-use clap::{ArgMatches, App, AppSettings, Arg};
+use clap::{App, AppSettings, Arg, ArgMatches};
 
 pub fn parse_args() -> ArgMatches<'static> {
     App::new("Devloop")

@@ -39,9 +39,7 @@ pub fn load<S: Into<String>>(filename: S) -> Result<DevloopConfig, DevloopError>
         .as_hash()
         .ok_or(DevloopError::InvalidConfig)?
         .into_iter()
-        .filter_map(|(key, value)| {
-            Some((key.as_str()?.to_owned(), Task::parse(value)?))
-        })
+        .filter_map(|(key, value)| Some((key.as_str()?.to_owned(), Task::parse(value)?)))
         .collect();
 
     debug!("actions: {:?}", actions);
