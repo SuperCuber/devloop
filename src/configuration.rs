@@ -17,6 +17,7 @@ pub struct DevloopConfig {
 pub struct Task {
     pub name: String,
     pub command: String,
+    pub wait_user: bool,
 }
 
 pub fn load<P: AsRef<Path>>(filename: P) -> Result<DevloopConfig, DevloopError> {
@@ -69,6 +70,7 @@ impl Task {
         Some(Task {
             name: task.get(0)?.as_str()?.to_owned(),
             command: task.get(1)?.as_str()?.to_owned(),
+            wait_user: task.get(2).map(Yaml::as_bool).unwrap_or(Some(false))?,
         })
     }
 }

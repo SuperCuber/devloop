@@ -18,11 +18,14 @@ impl DevloopConfig {
                 match read_line().as_ref() {
                     "q" => break 'main,
                     action => {
-                        if self.actions
+                        let (success, wait_user) = self.actions
                             .get(action)
-                            .map(|task| task.execute())
-                            .unwrap_or(true)
-                        {
+                            .map(|task| (task.execute(), task.wait_user))
+                            .unwrap_or((true, false));
+                        if success {
+                            if wait_user {
+                                ::std::io::stdin().read_line(&mut String::new()).unwrap();
+                            }
                             break;
                         } else {
                             msg(&MessageType::Fail, "Error.", false);
