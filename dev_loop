@@ -6,9 +6,9 @@ reminders: "Don't forget to format!" # Printed at the end
 actions: # Q to Quit
     f: ["Format", "cargo fmt"]
     t: ["Test", "cargo test -q -- -q"]
-    b: ["Benchmark", "cargo bench -q -- -q; read"]
+    b: ["Benchmark", "cargo bench -q -- -q", true] # Adding True means it will wait for user to press enter after completion
     r: ["Build release", "cargo build --release"]
-    u: ["Run", "te 'cargo run'"]
+    u: ["Run", "cargo run"] # Another good candidate for adding True
     c: ["Clean", "cargo clean"]
 
 # vim:ft=yaml:
