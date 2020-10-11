@@ -1,0 +1,30 @@
+reminders = "Don't forget to format!"
+
+[[tasks]]
+name = "Clippy"
+command = "cargo clippy -q"
+
+[actions.f]
+name = "Format"
+command = "cargo fmt"
+
+[actions.t]
+name = "Test"
+command = "cargo test -q -- -q"
+
+[actions.b]
+name = "Benchmark"
+command = "cargo bench -q -- -q"
+pause = true
+
+[actions.r]
+name = "Build release"
+command = "cargo build --release"
+
+[actions.u]
+name = "Run"
+command = "cargo run"
+
+[actions.c]
+name = "Clean"
+command = "cargo clean"
