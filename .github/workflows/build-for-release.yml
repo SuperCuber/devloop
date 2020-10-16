@@ -1,0 +1,37 @@
+name: Build assets for a Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: cargo build --release --verbose
+      - name: Upload asset
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_path: target/release/devloop
+          asset_name: devloop
+          asset_content_type: application/octet-stream
+          upload_url: ${{ github.event.release.upload_url }}
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: cargo build --release --verbose
+      - name: Upload asset
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_path: target/release/devloop.exe
+          asset_name: devloop.exe
+          asset_content_type: application/octet-stream
+          upload_url: ${{ github.event.release.upload_url }}
