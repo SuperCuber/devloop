@@ -10,18 +10,18 @@ command = "cargo fmt"
 
 [actions.t]
 name = "Test"
-command = "cargo test -q -- -q"
+command = "cargo test -q"
 
 [actions.b]
 name = "Benchmark"
-command = "cargo bench -q -- -q"
+command = "cargo bench -q"
 pause = true
 
-[actions.r]
+[actions.R]
 name = "Build release"
 command = "cargo build --release"
 
-[actions.u]
+[actions.r]
 name = "Run"
 command = "cargo run"
 
