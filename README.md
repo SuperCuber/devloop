@@ -16,8 +16,52 @@ Originally it was a [shell script](https://github.com/SuperCuber/dotfiles/blob/6
 
 # Installation
 Devloop is on crates.io, so just `cargo install devloop` after installing Rust.
+Alternatively, put the binary from the Releases page somewhere in your $PATH (or %PATH%)
 
 # Configuration
-Configuration is in a `dev_loop` (by default) file in the current directory.
+Configuration is in a `Devloop.toml` (by default) file in the current directory.
 
-It is a yaml file. For an example, check out the `dev_loop` file in this repository (which I used to develop this utility by the way).
+It is a toml file. Here's an example (from this repository's `Devloop.toml`), along with explanations:
+
+```toml
+# This will be printed when you press q to quit
+reminders = "Don't forget to format!"
+
+# The `[[name]]` syntax in toml means that you're defining an array of tables.
+# So this next section is equivalent to:
+#
+# tasks = [{ name = "Clippy", command = "cargo clippy -q" }]
+#
+# Each `[[section]]` will define one *element* in the array.
+
+# Each task will be run in order every time you press Enter.
+[[tasks]]
+name = "Clippy"
+command = "cargo clippy -q"
+
+# Actions is a table where the key is the shortcut (in this case "f")
+[actions.f]
+name = "Format"
+command = "cargo fmt"
+
+[actions.t]
+name = "Test"
+command = "cargo test -q"
+
+[actions.b]
+name = "Benchmark"
+command = "cargo bench -q"
+pause = true  # devloop will wait for another Enter before re-running [[tasks]]
+
+[actions.R]
+name = "Build release"
+command = "cargo build --release"
+
+[actions.r]
+name = "Run"
+command = "cargo run"  # Another good candidate for pause=true
+
+[actions.c]
+name = "Clean"
+command = "cargo clean"
+```
