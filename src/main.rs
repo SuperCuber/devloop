@@ -34,7 +34,9 @@ fn run_loop(config: config::DevloopConfig) {
         // Clear on success
         stdout()
             .execute(Clear(ClearType::All))
-            .expect("clear terminal");
+            .expect("clear terminal")
+            .execute(crossterm::cursor::MoveTo(0, 0))
+            .expect("reset cursor");
 
         if execute_tasks(&config.tasks) {
             print!("{}", done_help_msg);
