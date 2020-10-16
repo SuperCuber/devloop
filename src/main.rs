@@ -39,9 +39,9 @@ fn main() {
 
 fn run_loop(config: config::DevloopConfig) {
     let help_msg = config.help_characters();
-    let done_help_msg = format!("Done [{}]:", help_msg).on_green();
-    let error_msg = format!("Error. [{}]:", help_msg).on_red();
-    let interrupted_msg = format!("Interrupted. [{}]:", help_msg).on_red();
+    let done_help_msg = format!("Done [{}]:", help_msg).black().on_green();
+    let error_msg = format!("Error. [{}]:", help_msg).black().on_red();
+    let interrupted_msg = format!("Interrupted. [{}]:", help_msg).black().on_red();
 
     'main: loop {
         // Clear on success
@@ -103,7 +103,7 @@ fn run_loop(config: config::DevloopConfig) {
             }
         }
     }
-    println!("{}", config.reminders.on_yellow());
+    println!("{}", config.reminders.black().on_yellow());
 }
 
 fn execute_tasks(tasks: &[config::Task]) -> Option<bool> {

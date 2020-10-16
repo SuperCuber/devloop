@@ -53,7 +53,7 @@ impl DevloopConfig {
 impl Task {
     /// Returns Some(status) if task completed, None if interrupted
     pub fn execute(&self) -> Option<bool> {
-        println!("{}", format!("Running {}...", self.name).on_blue());
+        println!("{}", format!("Running {}...", self.name).black().on_blue());
         let mut cmd = self.get_command();
         let mut child = cmd.spawn().expect("spawn task");
 
