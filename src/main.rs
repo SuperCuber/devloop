@@ -1,9 +1,12 @@
+extern crate crossterm;
+extern crate ctrlc;
+#[macro_use]
+extern crate lazy_static;
 #[macro_use]
 extern crate serde_derive;
+extern crate structopt;
 #[macro_use]
 extern crate thiserror;
-extern crate crossterm;
-extern crate structopt;
 
 mod args;
 mod config;
@@ -11,10 +14,19 @@ mod config;
 use crossterm::style::Colorize;
 use crossterm::terminal::{Clear, ClearType};
 use crossterm::ExecutableCommand;
+
 use std::io::{stdin, stdout, Write};
+use std::sync::atomic::AtomicBool;
+
+lazy_static! {
+    pub(crate) static ref CTRLC_PRESSED: AtomicBool = AtomicBool::new(false);
+}
 
 fn main() {
     let args = args::get_opts();
+
+    ctrlc::set_handler(ctrl_c_handler).expect("set ctrl+c handler");
+
     let config = match config::load_config(&args.config) {
         Ok(config) => config,
         Err(e) => {
@@ -29,6 +41,7 @@ fn run_loop(config: config::DevloopConfig) {
     let help_msg = config.help_characters();
     let done_help_msg = format!("Done [{}]:", help_msg).on_green();
     let error_msg = format!("Error. [{}]:", help_msg).on_red();
+    let interrupted_msg = format!("Interrupted. [{}]:", help_msg).on_red();
 
     'main: loop {
         // Clear on success
@@ -38,12 +51,19 @@ fn run_loop(config: config::DevloopConfig) {
             .execute(crossterm::cursor::MoveTo(0, 0))
             .expect("reset cursor");
 
-        if execute_tasks(&config.tasks) {
-            print!("{}", done_help_msg);
-            stdout().flush().expect("flush stdout");
-        } else {
-            print!("{}", error_msg);
-            stdout().flush().expect("flush stdout");
+        match execute_tasks(&config.tasks) {
+            Some(true) => {
+                print!("{}", done_help_msg);
+                stdout().flush().expect("flush stdout");
+            }
+            Some(false) => {
+                print!("{}", error_msg);
+                stdout().flush().expect("flush stdout");
+            }
+            None => {
+                print!("{}", interrupted_msg);
+                stdout().flush().expect("flush stdout");
+            }
         }
 
         // Try actions until success
@@ -56,17 +76,23 @@ fn run_loop(config: config::DevloopConfig) {
                 action_key => {
                     let action = config.actions.get(action_key);
                     if let Some(action) = action {
-                        let success = action.execute();
-                        if success {
-                            if action.pause {
-                                stdin().read_line(&mut String::new()).unwrap();
+                        match action.execute() {
+                            Some(true) => {
+                                if action.pause {
+                                    stdin().read_line(&mut String::new()).unwrap();
+                                }
+                                break;
+                                // Clear
                             }
-                            break;
-                        // Clear
-                        } else {
-                            print!("{}", error_msg);
-                            stdout().flush().expect("flush stdout");
-                            // Choose action again
+                            Some(false) => {
+                                print!("{}", error_msg);
+                                stdout().flush().expect("flush stdout");
+                                // Choose action again
+                            }
+                            None => {
+                                print!("\n{}", interrupted_msg);
+                                stdout().flush().expect("flush stdout");
+                            }
                         }
                     } else {
                         print!("{} ", "No such action.".on_red());
@@ -80,11 +106,16 @@ fn run_loop(config: config::DevloopConfig) {
     println!("{}", config.reminders.on_yellow());
 }
 
-fn execute_tasks(tasks: &[config::Task]) -> bool {
+fn execute_tasks(tasks: &[config::Task]) -> Option<bool> {
     for task in tasks {
-        if !task.execute() {
-            return false;
+        if !task.execute()? {
+            return Some(false);
         }
     }
-    true
+    Some(true)
+}
+
+fn ctrl_c_handler() {
+    use std::sync::atomic::Ordering;
+    CTRLC_PRESSED.store(true, Ordering::SeqCst);
 }

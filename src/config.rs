@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
 use std::path::Path;
+use std::process::Command;
+use std::sync::atomic::Ordering;
 
 use crossterm::style::Colorize;
 
@@ -49,35 +51,38 @@ impl DevloopConfig {
 }
 
 impl Task {
-    pub fn execute(&self) -> bool {
+    /// Returns Some(status) if task completed, None if interrupted
+    pub fn execute(&self) -> Option<bool> {
         println!("{}", format!("Running {}...", self.name).on_blue());
-        self.run_command()
+        let mut cmd = self.get_command();
+        let mut child = cmd.spawn().expect("spawn task");
+
+        super::CTRLC_PRESSED.store(false, Ordering::SeqCst);
+        while !super::CTRLC_PRESSED.load(Ordering::SeqCst) {
+            if let Some(status) = child.try_wait().expect("try wait child") {
+                return Some(status.success());
+            }
+        }
+        child.kill().expect("kill task");
+        None
     }
 
     #[cfg(windows)]
-    fn run_command(&self) -> bool {
-        use std::process::Command;
-        Command::new("cmd")
-            .arg("/C")
-            .arg(&self.command)
-            .status()
-            .expect("child exit status")
-            .success()
+    fn get_command(&self) -> Command {
+        let mut cmd = Command::new("cmd");
+        cmd.arg("/C").arg(&self.command);
+        cmd
     }
 
     #[cfg(unix)]
-    fn run_command(&self) -> bool {
-        use std::process::Command;
-        Command::new("sh")
-            .arg("-c")
-            .arg(&self.command)
-            .status()
-            .expect("child exit status")
-            .success()
+    fn get_command(&self) -> Command {
+        let mut cmd = Command::new("sh");
+        cmd.arg("-c").arg(&self.command);
+        cmd
     }
 
     #[cfg(not(any(windows, unix)))]
-    fn run_command(&self) -> bool {
+    fn get_command(&self) -> bool {
         unimplemented!("Unsupported platform");
     }
 }
