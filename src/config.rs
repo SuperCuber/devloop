@@ -58,10 +58,13 @@ impl Task {
         let mut child = cmd.spawn().expect("spawn task");
 
         super::CTRLC_PRESSED.store(false, Ordering::SeqCst);
+        // First check only after 50 millis instead of immediately which usually fails
+        std::thread::sleep(std::time::Duration::from_millis(50));
         while !super::CTRLC_PRESSED.load(Ordering::SeqCst) {
             if let Some(status) = child.try_wait().expect("try wait child") {
                 return Some(status.success());
             }
+            std::thread::sleep(std::time::Duration::from_millis(200));
         }
         child.kill().expect("kill task");
         None
