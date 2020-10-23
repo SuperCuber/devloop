@@ -95,7 +95,7 @@ fn run_loop(config: config::DevloopConfig) {
                             }
                         }
                     } else {
-                        print!("{} ", "No such action.".on_red());
+                        print!("{} ", "No such action.".black().on_red());
                         stdout().flush().expect("flush stdout");
                         // Choose action again, use previous prompt for help
                     }
